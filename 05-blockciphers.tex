@@ -1,0 +1,443 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{amsthm}
+
+\usepackage{amsthm,amsmath,amsfonts,amssymb,amstext,enumitem}
+\usepackage{latexsym,ifthen,url,rotating,graphicx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes,positioning,fit}
+\usepackage{graphicx}
+\usepackage[font=small,labelfont=bf]{caption}
+
+
+
+% --- -----------------------------------------------------------------
+% --- Document-specific definitions.
+% --- -----------------------------------------------------------------
+\lstset{
+    columns=fixed,
+    literate={—}{{---}}1 {…}{{...}}1
+}
+
+\newcommand{\todo}[1]{{\color{red}[TODO:{#1}]}}
+
+\newtheorem{problem}{Problem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{fact}{Fact}
+\newtheorem{exercise}{Exercise}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{notation}{Notation}
+\newtheorem{lemma}{Lemma}
+\newtheorem{example}{Example}
+
+\newcommand{\getsr}
+  {{\:\stackrel{\raisebox{-2pt}{${\scriptscriptstyle \hspace{0.2em}\$}$}}
+   {\leftarrow}\:}}
+\newcommand{\points}[1]{\textbf{({#1} pts)}}
+
+\newcommand{\Colon}{\ : \ }
+\newcommand{\st}{\mathsf{state}}
+\newcommand{\msgs}{\mathcal{M}}
+\newcommand{\ctxts}{\mathcal{C}}
+\newcommand{\keys}{\mathcal{K}}
+\newcommand{\kg}{\mathcal{K}}
+\newcommand{\enc}{E}
+\newcommand{\dec}{E^{-1}}
+\newcommand{\MAC}{\mathrm{MAC}}
+\newcommand{\RMAC}{\mathrm{RMAC}}
+
+\newcommand{\pk}{pk}
+\newcommand{\sk}{sk}
+
+\newcommand{\calD}{\mathcal{D}}
+\newcommand{\AES}{\mathsf{AES}}
+
+\newcommand{\algorithm}[1]{\textbf{Alg} {#1}}
+
+\newcommand{\calO}{\mathcal{O}}
+
+\newcommand{\dlog}{\mathrm{dlog}}
+
+\newcommand{\Adv}{\mathbf{Adv}}
+\newcommand{\AdvPRF}[2]{\Adv^{\mathrm{prf}}_{#1}({#2})}
+\newcommand{\AdvPRG}[2]{\Adv^{\mathrm{prg}}_{#1}({#2})}
+\newcommand{\AdvCPA}[2]{\Adv^{\mathrm{ind{-}cpa}}_{#1}({#2})}
+\newcommand{\AdvCCA}[2]{\Adv^{\mathrm{ind{-}cca}}_{#1}({#2})}
+\newcommand{\AdvKR}[2]{\Adv^{\mathrm{kr}}_{#1}({#2})}
+\newcommand{\AdvCKR}[2]{\Adv^{\mathrm{ckr}}_{#1}({#2})}
+\newcommand{\AdvRMR}[2]{\Adv^{\mathrm{rmr}}_{#1}({#2})}
+\newcommand{\AdvCR}[2]{\Adv^{\mathrm{cr}}_{#1}({#2})}
+\newcommand{\AdvUFCMA}[2]{\Adv^{\textrm{uf{-}cma}}_{#1}({#2})}
+\newcommand{\AdvDL}[2]{\Adv^{\mathrm{dl}}_{#1}({#2})}
+
+\newcommand{\Exp}{\mathbf{Exp}}
+\newcommand{\ExpOW}[1]{\Exp^{\mathrm{ow}}({#1})}
+\newcommand{\ExpCKR}[2]{\Exp^{\mathrm{ckr}}_{#1}({#2})}
+\newcommand{\ExpRMR}[2]{\Exp^{\mathrm{rmr}}_{#1}({#2})}
+
+\newcommand{\concat}{{\,\|\,}}
+\newcommand{\xor}{\oplus}
+\newcommand{\bits}{\{0,1\}}
+
+\newcommand{\tcolh}{T^{\mathrm{col}}_h}
+\newcommand{\tcolH}{T^{\mathrm{col}}_{H^2}}
+\newcommand{\Hcomb}{H^{1\|2}}
+\newcommand{\Hxor}{H^{1\oplus2}}
+
+\newcommand{\EXP}{\textrm{EXP}}
+\newcommand{\MODEXP}{\textrm{MOD{-}EXP}}
+\newcommand{\ADD}{\textrm{ADD}}
+\newcommand{\MULTIMODEXP}{\textrm{MULTI{-}MOD{-}EXP}}
+\newcommand{\MUL}{\textrm{MUL}}
+\newcommand{\MOD}{\textrm{MOD}}
+
+\newcommand{\GG}{\mathbb{G}}
+\newcommand{\ZZ}{\mathbb{Z}}
+
+\newcommand{\bK}{\mathbf{K}}
+\newcommand{\bU}{\mathbf{U}}
+\newcommand{\bM}{\mathbf{M}}
+\newcommand{\bC}{\mathbf{C}}
+
+\newcommand{\rvrange}{\mathcal{R}}
+\newcommand{\rspace}{\mathcal{C}}
+
+\newcommand{\hatalpha}{\hat{\alpha}}
+
+\newcommand{\otp}{\mathrm{OTP}}
+\newcommand{\des}{\mathrm{DES}}
+\newcommand{\twodes}{\mathrm{2DES}}
+\newcommand{\threedes}{\mathrm{3DES}}
+\newcommand{\threedestwo}{\mathrm{3DES2}}
+\newcommand{\aes}{\mathrm{AES}}
+
+\newcommand{\Img}{\mathrm{Im}}
+
+% --- -----------------------------------------------------------------
+% --- Lecture notes formatting macros
+% --- -----------------------------------------------------------------
+
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+\newcounter{lecnum}
+%\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theexercise}{\thelecnum.\arabic{exercise}}
+\renewcommand{\theexample}{\thelecnum.\arabic{example}}
+\renewcommand{\thedefinition}{\thelecnum.\arabic{definition}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thefact}{\thelecnum.\arabic{fact}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[2]{
+   %\pagestyle{myheadings}
+   %\thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CMSC 28400 Introduction to Cryptography
+                        \hfill Autumn 2019} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill #2 \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Instructor: David Cash} \hfill }
+      \vspace{2mm}}
+   }
+   \end{center}
+   %\markboth{Lecture #1: #2}{Lecture #1: #2}
+   \vspace*{4mm}
+}
+
+
+
+
+
+% --- -----------------------------------------------------------------
+% --- The document starts here.
+% --- -----------------------------------------------------------------
+\begin{document}
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{5}{Notes \#5: Block Ciphers}
+
+\tableofcontents
+
+\noindent\hrulefill
+\bigskip
+
+Along with stream ciphers, block ciphers are a very widely-deployed type
+of algorithm used for encryption and other cryptographic purposes. These
+notes cover some basic definitions of
+
+\section{Introduction to Block Ciphers}
+
+Let's start with the definition.
+\begin{definition}
+    A cipher $E:\keys\times\msgs\to\ctxts$ is called a \emph{block cipher}
+    if $\msgs=\ctxts=\bits^\ell$ for some positive integer $\ell$. The integer
+    $\ell$ is called the \emph{block length} or \emph{block size} of $E$.
+\end{definition}
+When $E$ is a block cipher, then for each $k\in\keys$, $E(k,\cdot)$ must
+actually be computing a \emph{permutation} on $\bits^\ell$. In practice we will
+always have $\keys=\bits^n$ for some positive integer $n$, and we say that $n$
+is the \emph{key-length} of $E$.
+
+We will sometimes want to evaluate $E^{-1}$, the decryption algorithm.  Thus
+all practical block ciphers, like DES and AES that follow, support efficient
+decryption.
+\begin{example}
+    The DES blockcipher, described in Boneh-Shoup Chapter 3 and many other
+    places, is a function
+    \[
+        \des:\bits^{56}\times\bits^{64}\to\bits^{64}.
+    \]
+    The key length is $56$ and the block length is $64$. As we will see,
+    both of these lengths are a major limitation.
+
+    The replacement for DES is a family of three blockciphers, often called
+    AES128, AES192, and AES256, which have a common block length of $128$
+    and key lengths of $128, 192$, and $256$ respectively. The $128$
+    bit version is mostly commonly used. Later we'll refer back to this
+    as simply \emph{the} AES blockcipher, with the notation
+    \[
+        \aes:\bits^{128}\times\bits^{128}\to\bits^{128}.
+    \]
+    We do not recall the structure of the AES block ciphers here, but you
+    can read about them in Boneh-Shoup as well.
+\end{example}
+
+The construction of DES, AES, and other commonly-used block ciphers like KASUMI
+is an deep and active area of cryptography. It is also highly specialized, and
+unfortunately in a one-quarter introduction we can't do everything.  In
+addition to Boneh-Shoup, you can also check out \emph{The Block Cipher
+Companion} by Knudsen and Robshaw, which is available as a pdf from the
+library: \url{https://catalog.lib.uchicago.edu/vufind/Record/8899690}.
+
+\subsection{Security of Block Ciphers}
+
+What does it mean for a block cipher $E:\keys\times\msgs\to\ctxts$ to be
+\emph{secure}? Or, \emph{not secure}? For a stream cipher
+$G:\bits^n\to\bits^\ell$ we arrived at the notation pseudorandom generators and
+distinguishing advantage, which intuitive qualified the $G$ to be used in place
+of a one-time pad. For a block cipher however this definition does not fit;
+It's not even clear what we should give an adversary.
+
+In the next set of notes we will look at a formal a notion called
+\emph{pseudorandom permutation distinguishing advantage}.  That definition will
+probably make more sense after we look at how block ciphers are used. Just like
+the pseudo-one-time-pad motivated the pseudorandom generator notion,
+applications of block ciphers will drive their security requirements.
+
+For now we'll point out some informal requirements. If we plan to encrypted
+blocks with $E$, then it in almost any imaginable scenario we would want it to
+be hard to recover the blocks we are encrypting.  In a bit more detail, suppose
+we are using a key $k\in\bits^n$ and sending $c_i = E(k,m_i)$ for several
+blocks $m_1,m_2,\ldots\in\bits^\ell$. If an adversary captures
+$c_1,c_2,\ldots$, we might ask that it be hard to recover $m_1,m_2,\ldots$.
+This is called a \emph{known-ciphertext message recovery attack}, so called
+because the adversary knows the ciphertexts and is targeting the input message
+blocks.
+
+An even more basic requirement is that the \emph{key $k$ be difficult} to
+recover from the blocks $c_1,c_2,\ldots$; call this \emph{known-ciphertext key
+recover attack}. If an adversary can recover $k$ then it can certainly recover
+$m_1,m_2,\ldots$, but it is possible in principle that it finds a shortcut to
+recover the message blocks without recovering the $k$; This means security
+against known-ciphertext \emph{key}-recovery attacks is \emph{weaker} than
+security against known-ciphertext \emph{message} recovery attacks. 
+
+We could go on like this for a while, thinking about different combinations of
+what an adversary is given and what it is trying to find.  We'll stop with one
+more example that will drive a case-study enlightening some interesting issues
+in the next section.
+
+It turns out that very often an adversary learn not only some $c_1,c_2,\ldots$,
+but also the input message blocks $m_1,m_2,\ldots$. Perhaps it doesn't learn
+every single input message block (otherwise nothing is really hidden), but
+in practice adversaries can often obtain some blocks like this. For instance,
+if a web server is encrypting web pages, then adversary will very often know
+that particular input blocks correspond to protocol boiler-plate text; In
+that case it can match up some blocks $c_i$ with blocks $m_i$ that it knows.
+
+This called a \emph{known plaintext attack}. Abstractly, we'll assume an
+adversary is given some ``examples'' $(m_1,c_1),(m_2,c_2),\ldots$ where
+$c_1=E(k,m_1), c_2=E(k,m_2),\ldots$, all computed under the same unknown key
+$k$. As a natural goal for the adversary is to recover $k$, so that it can
+decrypt future blocks as they're sent. This is a \emph{known-plaintext
+key-recovery attack}, which is the subject of the next two sections.
+
+\section{Exhaustive Key Search}
+
+Consider the setting for a known-plaintext attack that has captured some
+message/ciphertext pairs $(m_1,c_1),(m_2,c_2),\ldots$ where $c_i=E(k,m_i)$. A
+simple strategy to find $k$ is simply try every possible key and see which one
+``works''. More formally, it could work as follows:
+
+\begin{tabbing}123\=123\=123\=\kill
+    \> \textsc{Input}: Examples $(m_1,c_1),(m_2,c_2),\ldots$, where $c_i=E(k,m_i)$\\
+    \> \textsc{Output}: A key $\hat{k}\in\keys$\\
+    \> For $\hat{k}\in\keys$:\\
+    \> \> If $E(\hat{k},m_i)=c_i$ for all $i$: Output $\hat{k}$
+\end{tabbing}
+
+There are two primary properties to consider: Correctness and runtime. The
+algorithm will always terminate and output \emph{some} $\hat{k}\in\keys$,
+because it will at least stop when it gets the correct key. However it may in
+principle output another key that also maps all of the $m_i$ to the respective
+$c_i$. In practice this basically never happens once more than a few examples
+are happened; We will ignore this possibility and assume the algorithm is
+correct for our purposes.
+
+For run time, we are mostly concerned with the number of iterations of the
+``For'' loop, which is $|\keys|=2^n$ for a block cipher with $n$-bit keys.  The
+DES block cipher only has $2^{56}$ keys, which is not very large by modern
+standards, and today even a modestly-equipped adversary can execute this
+algorithm quickly (hours or minutes depending on their computer). Against AES
+the runtime is $2^{128}$, which is generally considered totally infeasible.
+
+\section{Double Encryption}
+
+DES was retired because of its small key length and block length, but many
+systems and protocols were deployed with DES baked into them. Instead of
+completely rebuilding the systems that used DES to convert them to a block
+cipher with larger parameters like AES, many opted to use \emph{triple
+encryption} where they ran DES three times instead of two. 
+
+In this section we investigate their interesting decision to encrypt three
+times rather than two. Here are the options considered, which we denote
+$\twodes$ and $\threedes$. ``Double $\des$'' has the form
+\[
+    \twodes : \bits^{112}\times\bits^{64}\to\bits^{64}.
+\]
+On input $k\in\bits^{112}$ and $m\in\bits^{64}$, $\twodes$ will divide
+the key into two $56$ bit keys $k_1$ and $k_2$ and outputs
+\[
+    \twodes(k_1\|k_2, m) = \des(k_2,\des(k_1,m)).
+\]
+You can check that $\twodes$ satisfies the definition of a block cipher.
+The key length of $\twodes$ is $112$, and an exhaustive key search would
+run on the order of $2^{112}$ time, which is likely infeasible. It would
+appear that $\twodes$ is strong enough for practice. However, due to
+the interesting ``meet in the middle'' attack that we look at next, $\twodes$
+is not used; Instead three-key versions are used, like
+\[
+    \threedes : \bits^{168}\times\bits^{64}\to\bits^{64}
+\]
+which maps
+\[
+    \threedes(k_1\|k_2\|k_3, m) = \des(k_3,\des(k_2,\des(k_1,m)))
+\]
+where $k_1,k_2,k_3$ are $56$ bits each. In order to save on key storage,
+sometimes a variant called $\threedestwo$ is used, where
+\[
+    \threedestwo : \bits^{112}\times\bits^{64}\to\bits^{64}
+\]
+and
+\[
+    \threedestwo(k_1\|k_2, m) = \des(k_1,\des^{-1}(k_2,\des(k_1,m))).
+\]
+This version seems to avoid known attacks. Note the middle application of
+$\des$ is actually a decryption operation; This allows for an easy fallback
+mode, where if one sets $k_1=k_2$ then $\threedestwo$ will collapse back to
+``single'' $\des$.
+
+\subsection{Meet-in-the-Middle Attack on Double Encryption}
+
+We now give the attack that breaks $\twodes$ with about $2^{56}$ computation.
+It is a known-plaintext key recovery attack, that works well with only three or
+more known-plaintext blocks. To some approximation, it shows that that 
+$\twodes$ is no better than single $\des$! We are looking into this because
+it is an elegant method, and also because it highlights the subtleties of
+security.
+
+The attack is called \emph{meet-in-the-middle}, and works as follows.  In this
+algorithm, for convenience we use two arrays $L,R$ indexed by $56$-bit strings.
+Note that the loop variables $i,j$ below are such strings, and hence can
+be used to index positions in $L$ and $R$.
+\begin{tabbing}123\=123\=123\=\kill
+    \> \textsc{Input}: Examples $(m_1,c_1),(m_2,c_2),\ldots,(m_t,c_t)$ where
+    $c_i=\twodes(k_1\|k_2,m_i)$\\
+    \> \textsc{Output}: A key $\hat{k}_1\|\hat{k}_2\in\bits^{112}$\\
+    \> For $\hat{k}\in\bits^{56}$:\ $L[\hat{k}] \gets (\des(\hat{k},m_1), \ldots, \des(\hat{k},m_t))$\\
+    \> For $\hat{k}\in\bits^{56}$:\ $R[\hat{k}] \gets (\des^{-1}(\hat{k},c_1), \ldots, \des^{-1}(\hat{k},c_t))$\\
+    \> Output any $(\hat{k}_1,\hat{k}_2)\in\bits^{56}\times\bits^{56}$ such that $L[\hat{k}_1]=R[\hat{k}_2]$.
+\end{tabbing}
+What's going on in this algorithm? It is based on the following observation:
+For the correct key $k_1\|k_2$, it holds that
+\[
+    (\des(k_1,m_1),\ldots,\des(k_1,m_t)) = 
+    (\des^{-1}(k_2,c_1),\ldots,\des^{-1}(k_2,c_t)).
+\]
+So we can compute every possible value on each side of the equation and then
+search for the collision (the ``meeting in the middle''). The trick is that
+we are reusing our computational effort here. Instead of trying each
+combination $k_1$ and $k_2$ together, we are able to reuse a single
+evaluation with a guess for $k_1$ for \emph{every} guess of $k_2$.
+
+The attack runs in time about $2\cdot 2^{56}=2^{57}$, which is approximately
+equal to the effort required to break single $\des$.
+
+\begin{exercise}\label{ex:examples}
+    Let's estimate how the value of $t$ affects the probability that
+    we get the correct key. The probability can't go down as $t$
+    gets larger, but larger $t$ result in more computational effort,
+    so we prefer to use some minimal value.
+
+    Actually computing the correct value of $t$ would depend on the
+    inner workings of $\des$. Instead we'll do it heuristically.
+    Assume that all of the entries of $L$ and $R$ are \emph{uniformly
+    random and independent strings}, except for the entries that
+    correspond to $k_1$ and $k_2$, which are equal. Using the union bound
+    (see the probability notes), give a simple upper bound on the
+    probability that the algorithm would output an incorrect key pair
+    under this heuristic.
+\end{exercise}
+
+\begin{exercise}
+    Adapt the meet-in-the-middle attack to $\threedes$. How long does
+    your attack run, and how much memory does it consume? Repeat the
+    Exercise~\ref{ex:examples} to estimate the number of examples required
+    to get a good bound on the probability your algorithm will output
+    the wrong key.
+\end{exercise}
+
+\begin{exercise}
+    Consider the block cipher $E:\bits^{112}\times\bits^{64}\to\bits^{64}$
+    defined as
+    \[
+        E(k_1\|k_2,m) = \des(k_1,m)\oplus k_2,
+    \]
+    where $k_1,k_2\in\bits^{56}$. Find a known-plaintext key
+    recovery against $E$ that is not much more expensive than attacking
+    plain $\des$. Repeat exercise~\ref{ex:examples}, but with your new
+    attack.
+\end{exercise}
+
+\begin{exercise}
+    Consider the block cipher $E:\bits^{168}\times\bits^{64}\to\bits^{64}$
+    defined as
+    \[
+        E(k_1\|k_2\|k_3,m) = \des(k_1,m\oplus k_3)\oplus k_2,
+    \]
+    where $k_1,k_2,k_3\in\bits^{56}$. Find a known-plaintext key recovery
+    against $E$ that takes about $2^{56+64}$ time.  Repeat
+    exercise~\ref{ex:examples}, but with your new attack.
+\end{exercise}
+
+
+
+\end{document}
+
