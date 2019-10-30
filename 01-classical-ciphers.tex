@@ -278,14 +278,14 @@ we'll call \emph{exhaustive key search}:
 \begin{enumerate}
     \item Assume a ciphertext $C$ was produced using the shift cipher. 
         
-    \item For each $K'\in\keys$, run $M = \enc(K',M)$; If $M$ ``looks like
+    \item For each $K'\in\keys$, run $M = \dec(K',C)$; If $M$ ``looks like
         a typical message'' then halt and output $M$. Otherwise, continue.
 \end{enumerate}
 This strategy just tries all of the keys and hopes to recognize when it hits on
 the correct one. If the parties are sending English text, then in all
 likelihood only one key will result in a message that looks like English text.
 Moreover, there are only $|\keys|=26$ keys, so this will run very very quickly,
-even by hand.  Its enough to convince me that the shift cipher is broken.
+even by hand.  It's enough to convince me that the shift cipher is broken.
 
 \begin{exercise}
     Use your shift cipher implementation to mount an exhaustive key search
